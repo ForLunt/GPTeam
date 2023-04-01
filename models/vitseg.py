@@ -1,6 +1,7 @@
 import math
 from posixpath import basename, dirname, join
 # import clip
+#pip install git+https://github.com/openai/CLIP.git
 from clip.model import convert_weights
 import torch
 import json

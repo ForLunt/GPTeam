@@ -1,8 +1,6 @@
 import os
 import torch
-import requests
 import numpy as np
-import torch.nn.functional as F
 from models.clipseg import CLIPDensePredT
 from PIL import Image
 from torchvision import transforms
@@ -47,8 +45,8 @@ def clip_image(imageName, prompts):
     input_image = Image.open(imageName)
 
     # Create the "Output" directory if it doesn't exist
-    if not os.path.exists('Output'):
-        os.makedirs('Output')
+    if not os.path.exists('output'):
+        os.makedirs('output')
 
     transform = transforms.Compose([
         transforms.ToTensor(),
@@ -81,13 +79,13 @@ def clip_image(imageName, prompts):
         ax.imshow(prediction, cmap='gray')
         ax.axis('off')
         fig.canvas.manager.full_screen_toggle()
-        print(fig.get_size_inches())
-        fig.savefig('Output/output_{}.png'.format(prompts[i].replace(' ', '_')), bbox_inches='tight', pad_inches=0)
+        fig.savefig('output/temp_output_{}.png'.format(prompts[i].replace(' ', '_')), bbox_inches='tight', pad_inches=0)
         plt.close(fig)  # close the figure window
-        # resize_image('output_{}.png'.format(prompts[i].replace(' ', '_')), 512)
-        # resize_image(imageName, 512)
 
-        output_image = Image.open('Output/output_{}.png'.format(prompts[i].replace(' ', '_')))
+        output_image = Image.open('output/temp_output_{}.png'.format(prompts[i].replace(' ', '_')))
         resized_image = output_image.resize(input_image.size)
-        resized_image.save('Output/re_'+'output_{}.png'.format(prompts[i].replace(' ', '_')))
+        resized_image.save('output/output_{}.png'.format(prompts[i].replace(' ', '_')))
+
+        #remove temp files
+        os.remove('output/temp_output_{}.png'.format(prompts[i].replace(' ', '_')))
 

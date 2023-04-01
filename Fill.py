@@ -5,9 +5,6 @@ from diffusers import StableDiffusionInpaintPipeline
 
 def fill_mask(image_path, mask_image_path):
 
-    image_path = "/home/dakire/Desktop/image.png"
-    mask_image_path = "/home/dakire/Desktop/mask.png"
-
     # Load the image and mask as PIL images
     image = Image.open(image_path)
     mask_image = Image.open(mask_image_path)
@@ -27,12 +24,12 @@ def fill_mask(image_path, mask_image_path):
     pipe.to(device)
 
     # Define the prompt for the inpainting
-    prompt = "motor racing circuit"
+    prompt = "motor racing track"
 
     # Apply the inpainting to the image using the pipeline
     output = pipe(prompt=prompt, image=image, mask_image=mask_image).images[0]
     # Save the output image
-    output.resize(old_dimensions_image).save("./result.png")
+    output.resize(old_dimensions_image).save("output/result.png")
 
     torch.cuda.empty_cache()
 

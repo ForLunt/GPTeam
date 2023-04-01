@@ -1,8 +1,11 @@
-from GPTeam.Mask import clip_image
-from GPTeam.Trou import fill_mask
+from Mask import clip_image
+from Fill import fill_mask
 
 
 
+prompt = "sponsor banner green and white in background"
+prompt2 = "banner"
 
-clip_image('input/porsche-911.jpg', ['sponsor banner green and white in background','banner'])
-fill_mask('input/porsche-911.jpg', 'mask.png')
+# Suppression elelents indésirables selon prompt
+clip_image('input/porsche-911.jpg', [prompt,prompt2])
+fill_mask('input/porsche-911.jpg', "output/output_"+prompt.replace(" ","_") + ".png")
