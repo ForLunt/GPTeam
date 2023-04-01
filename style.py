@@ -1,91 +1,56 @@
-from PIL import Image
-from torchvision import transforms
-import torch
+import PIL
+import matplotlib.pylab as plt
+import numpy as np
+import tensorflow as tf
+import tensorflow_hub as tf_hub
+from matplotlib import gridspec
 
-# Paths to content and style images
-image_path = "/home/dakire/Desktop/image.jpeg"
-style_path = "/home/dakire/Desktop/style.jpeg"
 
-# Check if CUDA is available
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+def load_image(image_path, image_size=(512, 256)):
+    img = tf.io.decode_image(
+        tf.io.read_file(image_path),
+        channels=3, dtype=tf.float32)[tf.newaxis, ...]
+    img = tf.image.resize(img, image_size, preserve_aspect_ratio=True)
+    return img
 
-# Load content and style images
-content_image = Image.open(image_path).convert('RGB')
-style_image = Image.open(style_path).convert('RGB')
 
-# Define the transforms for the images
-transform = transforms.Compose([
-    transforms.Resize(256),
-    transforms.CenterCrop(256),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                         std=[0.229, 0.224, 0.225])
-])
+def visualize(images, titles=('',)):
+    noi = len(images)
+    image_sizes = [image.shape[1] for image in images]
+    w = (image_sizes[0] * 6) // 320
+    plt.figure(figsize=(w * noi, w))
+    grid_look = gridspec.GridSpec(1, noi, width_ratios=image_sizes)
 
-# Apply the transforms to the images
-content_tensor = transform(content_image)
-style_tensor = transform(style_image)
+    for i in range(noi):
+        plt.subplot(grid_look[i])
+        plt.imshow(images[i][0], aspect='equal')
+        plt.axis('off')
+        plt.title(titles[i])
+        plt.savefig("final.jpg")
+    plt.show()
 
-# Add batch dimension to tensors
-content_tensor = content_tensor.unsqueeze(0)
-style_tensor = style_tensor.unsqueeze(0)
 
-# Load the model
-vgg = torch.hub.load('pytorch/vision:v0.9.0', 'vgg16', pretrained=True)
+original_image = load_image("input/mouette.jpeg")
+style_image = load_image("input/style.png")
 
-# Define the style layer
-style_layer = 'relu2_2'
+style_image = tf.nn.avg_pool(style_image, ksize=[3, 3], strides=[1, 1], padding='VALID')
+# visualize([original_image, style_image], ['Original Image', 'Style Image'])
 
-# Extract features from style image
-style_features = vgg(style_tensor.to(device))
-style_gram = [torch.mm(feature, feature.t()) for feature in style_features[style_layer]]
+stylize_model = tf_hub.load("magenta")
 
-# Extract features from content image
-content_features = vgg(content_tensor.to(device))
-content_gram = [torch.mm(feature, feature.t()) for feature in content_features[style_layer]]
+results = stylize_model(tf.constant(original_image), tf.constant(style_image))
+stylized_photo = results[0]
 
-# Initialize the output image with random noise
-output_tensor = torch.randn(content_tensor.shape, device=device, requires_grad=True)
+results = stylize_model(tf.constant(original_image), tf.constant(style_image))
+stylized_photo = results[0]
 
-# Define optimizer
-optimizer = torch.optim.Adam([output_tensor], lr=0.01)
+def export_image(tf_img):
+    tf_img = tf_img * 255
+    tf_img = np.array(tf_img, dtype=np.uint8)
+    if np.ndim(tf_img) > 3:
+        assert tf_img.shape[0] == 1
+        img = tf_img[0]
+    return PIL.Image.fromarray(img)
 
-# Set number of iterations and lambda values
-num_iterations = 2000
-content_weight = 1
-style_weight = 1e6
 
-# Run style transfer
-for i in range(num_iterations):
-    # Zero out gradients
-    optimizer.zero_grad()
-
-    # Extract features from output image
-    output_features = vgg(output_tensor)
-    output_gram = [torch.mm(feature, feature.t()) for feature in output_features[style_layer]]
-
-    # Calculate content loss
-    content_loss = sum([torch.nn.functional.mse_loss(output_features[layer], content_features[layer]) for layer in content_features])
-
-    # Calculate style loss
-    style_loss = sum([torch.nn.functional.mse_loss(output_gram[layer], style_gram[layer]) for layer in range(len(style_gram))])
-
-    # Calculate total loss
-    total_loss = content_weight * content_loss + style_weight * style_loss
-
-    # Backpropagate and update
-    total_loss.backward()
-    optimizer.step()
-
-    # Print progress
-    if i % 100 == 0:
-        print(f"Iteration {i}: total loss = {total_loss.item()}")
-
-# Remove batch dimension from tensor
-output_tensor = output_tensor.squeeze(0)
-
-# Convert tensor to image
-output_image = transforms.ToPILImage()(output_tensor.cpu())
-
-# Save output image
-output_image.save('output.jpg')
+export_image(stylized_photo).save("output/photo_stylise.png")
