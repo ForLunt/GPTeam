@@ -91,4 +91,3 @@ def clip_image(imageName, prompts):
         resized_image = output_image.resize(input_image.size)
         resized_image.save('Output/re_'+'output_{}.png'.format(prompts[i].replace(' ', '_')))
 
-clip_image('porsche-911.jpg', ['sponsor banner green and white in background','banner'])
