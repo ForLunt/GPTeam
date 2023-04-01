@@ -17,13 +17,7 @@ old_dimensions_mask = mask_image.size
 image = image.resize((512, 512))
 mask_image = mask_image.resize((512, 512))
 
-print("image size:", image.size)
-print("mask size:", mask_image.size)
-
-
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-print("torch.cuda.current_device()", torch.cuda.current_device())
 
 # Initialize the pipeline
 pipe = StableDiffusionInpaintPipeline.from_pretrained(
@@ -33,7 +27,7 @@ pipe = StableDiffusionInpaintPipeline.from_pretrained(
 pipe.to(device)
 
 # Define the prompt for the inpainting
-prompt = "Replace according to context"
+prompt = "motor racing circuit"
 
 # Apply the inpainting to the image using the pipeline
 output = pipe(prompt=prompt, image=image, mask_image=mask_image).images[0]
