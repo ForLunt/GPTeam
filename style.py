@@ -36,6 +36,8 @@ style_image = load_image("input/style.png")
 style_image = tf.nn.avg_pool(style_image, ksize=[3, 3], strides=[1, 1], padding='VALID')
 # visualize([original_image, style_image], ['Original Image', 'Style Image'])
 
+
+# A telecharger : https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2?tf-hub-format=compressed
 stylize_model = tf_hub.load("magenta")
 
 results = stylize_model(tf.constant(original_image), tf.constant(style_image))
