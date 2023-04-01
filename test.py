@@ -1,3 +1,4 @@
+import os
 import torch
 import requests
 import numpy as np
@@ -7,8 +8,7 @@ from PIL import Image
 from torchvision import transforms
 from matplotlib import pyplot as plt
 
-
-def resize_image(imageName, size_max):
+def resize_image(imageName, size_max,):
     max_size = size_max  # la taille maximale pour la plus grande dimension
 
     # ouvrir l'image et récupérer ses dimensions
@@ -29,16 +29,26 @@ def resize_image(imageName, size_max):
     # enregistrer l'image redimensionnée
     image.save('redimensionne_'+imageName)
 
-def clip_image(imageName):
+def clip_image(imageName, prompts):
+    if (imageName == ''):
+        raise Exception("Image name is empty")
+    elif (len(prompts) == 0):
+        raise Exception("Prompts list is empty")
+    
     # load model
     model = CLIPDensePredT(version='ViT-B/16', reduce_dim=64)
-    model.eval();
+    
+    model.eval()
 
     # non-strict, because we only stored decoder weights (not CLIP weights)
     model.load_state_dict(torch.load('weights/rd64-uni.pth', map_location=torch.device('cpu')), strict=False);
 
     # load and normalize image
     input_image = Image.open(imageName)
+
+    # Create the "Output" directory if it doesn't exist
+    if not os.path.exists('Output'):
+        os.makedirs('Output')
 
     transform = transforms.Compose([
         transforms.ToTensor(),
@@ -47,12 +57,12 @@ def clip_image(imageName):
     ])
     img = transform(input_image).unsqueeze(0)
 
-    prompts = ['sponsor banner green and white in background','banner']
+    #prompts = ['sponsor banner green and white in background','banner']
 
     with torch.no_grad():
         preds = model(img.repeat(len(prompts),1,1,1), prompts)[0]
 
-    print("Image size : ",input_image.size)
+    # print("Image size : ",input_image.size)
 
     # get resized prediction
     prediction = torch.where(preds[0][0] > 0, torch.tensor(255), torch.tensor(0))
@@ -72,13 +82,13 @@ def clip_image(imageName):
         ax.axis('off')
         fig.canvas.manager.full_screen_toggle()
         print(fig.get_size_inches())
-        fig.savefig('output_{}.png'.format(prompts[i].replace(' ', '_')), bbox_inches='tight', pad_inches=0)
+        fig.savefig('Output/output_{}.png'.format(prompts[i].replace(' ', '_')), bbox_inches='tight', pad_inches=0)
         plt.close(fig)
         # resize_image('output_{}.png'.format(prompts[i].replace(' ', '_')), 512)
         # resize_image(imageName, 512)
 
-        output_image = Image.open('output_{}.png'.format(prompts[i].replace(' ', '_')))
+        output_image = Image.open('Output/output_{}.png'.format(prompts[i].replace(' ', '_')))
         resized_image = output_image.resize(input_image.size)
-        resized_image.save('re_'+'output_{}.png'.format(prompts[i].replace(' ', '_')))
+        resized_image.save('Output/re_'+'output_{}.png'.format(prompts[i].replace(' ', '_')))
 
-clip_image('porsche-911.jpg')
+clip_image('porsche-911.jpg', ['sponsor banner green and white in background','banner'])
