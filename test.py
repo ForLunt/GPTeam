@@ -83,7 +83,7 @@ def clip_image(imageName, prompts):
         fig.canvas.manager.full_screen_toggle()
         print(fig.get_size_inches())
         fig.savefig('Output/output_{}.png'.format(prompts[i].replace(' ', '_')), bbox_inches='tight', pad_inches=0)
-        plt.close(fig)
+        plt.close(fig)  # close the figure window
         # resize_image('output_{}.png'.format(prompts[i].replace(' ', '_')), 512)
         # resize_image(imageName, 512)
 
