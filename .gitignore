@@ -6,7 +6,7 @@ __pycache__/
 result.*
 training_dataset_Partie_1.zip
 
-output/*.png
+output/*
 
 magenta/
 training_dataset

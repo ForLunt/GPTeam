@@ -1,3 +1,5 @@
+import os
+
 import torch
 import torchvision
 import torch.nn as nn
@@ -16,13 +18,22 @@ num_ftrs = model.classifier[6].in_features
 # Alternatively, it can be generalized to nn.Linear(num_ftrs, len(class_names)).
 model.fc = nn.Linear(num_ftrs, 3)
 
-model.load_state_dict(torch.load('model_custom_weightsV2.pth'))
+model.load_state_dict(torch.load('../model_custom_weightsV2.pth'))
 
 model.eval()
 #print(model)
 
-# Chargez l'image que vous souhaitez analyser
-image = Image.open('../input/5.jpg')
+
+
+
+
+# Load the images to analyze from a directory
+images = []
+for filename in os.listdir('../input/Partie_5'):
+    img = Image.open(os.path.join('../input/Partie_5', filename))
+    if img is not None:
+        images.append(img)
+
 
 # Préparez l'image pour l'analyse
 transform = torchvision.transforms.Compose([
@@ -33,17 +44,28 @@ transform = torchvision.transforms.Compose([
         std=[0.229, 0.224, 0.225]
     )
 ])
-input_image = transform(image).unsqueeze(0)
+
+input_images = []
+for image in images:
+    input_images.append(transform(image).unsqueeze(0))
+
+
+
+detections = []
 
 # Passez l'image dans le modèle de détection d'objet
+for input_image in input_images:
+    with torch.no_grad():
+        detections.append(model(input_image))
 
-with torch.no_grad():
-    detections = model(input_image)
 
-# Analysez les résultats de détection
-_, preds = torch.max(detections, 1)
 
-print(class_names[preds.tolist()[0]])
+for i,detection in enumerate(detections):
+    # Analysez les résultats de détection
+    _, preds = torch.max(detection, 1)
+
+    print("image = " + images[i].filename + " ------ "+class_names[preds.tolist()[0]])
+
 # Dessinez les boîtes englobantes sur l'image d'origine
 """image_cv2 = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
 for box, score, label in zip(boxes, scores, labels):

@@ -3,7 +3,7 @@ from PIL import Image
 from diffusers import StableDiffusionInpaintPipeline
 
 
-def fill_mask(image_path, mask_image_path):
+def fill_mask(image_path, mask_image_path, prompt):
 
     # Load the image and mask as PIL images
     image = Image.open(image_path)
@@ -24,7 +24,7 @@ def fill_mask(image_path, mask_image_path):
     pipe.to(device)
 
     # Define the prompt for the inpainting
-    prompt = "motor racing track"
+    # prompt = "motor racing track"
 
     # Apply the inpainting to the image using the pipeline
     output = pipe(prompt=prompt, image=image, mask_image=mask_image).images[0]
