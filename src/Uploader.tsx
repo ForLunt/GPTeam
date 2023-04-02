@@ -2,12 +2,11 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Button, Header, Icon, Segment } from 'semantic-ui-react'
 
 function WrongImages({Images, fileNames} : {Images : FileList, fileNames : string[]}) {
-    const 
 
-    useEffect(() => {
+    /*useEffect(() => {
         // On récupère la liste des images qui ont pour nom un des noms de fileNames
         const wrongImages = Array.from(Images).filter((image) => fileNames.includes(image.name))
-    }, [Images, fileNames])
+    }, [Images, fileNames])*/
 
     return (
         <Segment placeholder>
