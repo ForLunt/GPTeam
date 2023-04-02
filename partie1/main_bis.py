@@ -17,7 +17,7 @@ num_ftrs = model.classifier[6].in_features
 print(".", end="")
 model.fc = nn.Linear(num_ftrs, 3)
 print(".", end="")
-model.load_state_dict(torch.load('./model_custom_weightsV2.pth', map_location=torch.device('cpu')))
+model.load_state_dict(torch.load('./model_custom_weightsV2.pth'))
 print("Chargement du modèle terminé")
 
 
