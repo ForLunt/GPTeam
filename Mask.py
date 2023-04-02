@@ -32,21 +32,23 @@ def clip_image(imageName, prompts):
         raise Exception("Image name is empty")
     elif (len(prompts) == 0):
         raise Exception("Prompts list is empty")
-    
+
     # load model
     model = CLIPDensePredT(version='ViT-B/16', reduce_dim=64)
-    
+
     model.eval()
 
     # non-strict, because we only stored decoder weights (not CLIP weights)
-    model.load_state_dict(torch.load('weights/rd64-uni.pth', map_location=torch.device('cpu')), strict=False);
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model.load_state_dict(torch.load('weights/rd64-uni.pth', map_location=device), strict=False);
 
+    input_image = imageName
     # load and normalize image
-    input_image = Image.open(imageName)
+    # input_image = Image.open(imageName)
 
     # Create the "Output" directory if it doesn't exist
-    if not os.path.exists('output'):
-        os.makedirs('output')
+    if not os.path.exists('./Resultat_Partie_5/maskage/'):
+        os.makedirs('./Resultat_Partie_5/maskage/')
 
     transform = transforms.Compose([
         transforms.ToTensor(),
@@ -55,12 +57,9 @@ def clip_image(imageName, prompts):
     ])
     img = transform(input_image).unsqueeze(0)
 
-    #prompts = ['sponsor banner green and white in background','banner']
-
     with torch.no_grad():
         preds = model(img.repeat(len(prompts),1,1,1), prompts)[0]
 
-    # print("Image size : ",input_image.size)
 
     # get resized prediction
     prediction = torch.where(preds[0][0] > 0, torch.tensor(255), torch.tensor(0))
@@ -70,22 +69,21 @@ def clip_image(imageName, prompts):
 
     # visualize prediction and save to file
 
-    for i in range(len(prompts)):
-        fig, ax = plt.subplots(1, 1)
-        prediction = torch.where(preds[i][0] > 0, torch.tensor(255), torch.tensor(0))
-        prediction = prediction.numpy().astype(np.uint8)
-        prediction = Image.fromarray(prediction)
-        prediction = prediction.resize(input_image.size)
-        ax.imshow(prediction, cmap='gray')
-        ax.axis('off')
-        fig.canvas.manager.full_screen_toggle()
-        fig.savefig('output/temp_output_{}.png'.format(prompts[i].replace(' ', '_')), bbox_inches='tight', pad_inches=0)
-        plt.close(fig)  # close the figure window
+    fig, ax = plt.subplots(1, 1)
+    prediction = torch.where(preds[0] > 0, torch.tensor(255), torch.tensor(0))
+    prediction = prediction.numpy().astype(np.uint8)
+    prediction = Image.fromarray(prediction)
+    prediction = prediction.resize(input_image.size)
+    ax.imshow(prediction, cmap='gray')
+    ax.axis('off')
+    fig.canvas.manager.full_screen_toggle()
+    fig.savefig('./Resultat_Partie_5/maskage/temp_output_{}.png'.format(prompts.replace(' ', '_')), bbox_inches='tight', pad_inches=0)
+    plt.close(fig)  # close the figure window
 
-        output_image = Image.open('output/temp_output_{}.png'.format(prompts[i].replace(' ', '_')))
-        resized_image = output_image.resize(input_image.size)
-        resized_image.save('output/output_{}.png'.format(prompts[i].replace(' ', '_')))
+    output_image = Image.open('./Resultat_Partie_5/maskage/temp_output_{}.png'.format(prompts.replace(' ', '_')))
+    resized_image = output_image.resize(input_image.size)
+    resized_image.save('./Resultat_Partie_5/maskage/output_{}.png'.format(prompts.replace(' ', '_')))
 
-        #remove temp files
-        os.remove('output/temp_output_{}.png'.format(prompts[i].replace(' ', '_')))
+    #remove temp files
+    os.remove('./Resultat_Partie_5/maskage/temp_output_{}.png'.format(prompts.replace(' ', '_')))
 

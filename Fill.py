@@ -6,7 +6,8 @@ from diffusers import StableDiffusionInpaintPipeline
 def fill_mask(image_path, mask_image_path, prompt):
 
     # Load the image and mask as PIL images
-    image = Image.open(image_path)
+    image=image_path
+    # image = Image.open(image_path)
     mask_image = Image.open(mask_image_path)
 
     old_dimensions_image = image.size
@@ -29,7 +30,7 @@ def fill_mask(image_path, mask_image_path, prompt):
     # Apply the inpainting to the image using the pipeline
     output = pipe(prompt=prompt, image=image, mask_image=mask_image).images[0]
     # Save the output image
-    output.resize(old_dimensions_image).save("output/result.png")
+    output.resize(old_dimensions_image).save(image_path.filename +"output_" + prompt.replace(" ", "_") + "filled.png")
 
     torch.cuda.empty_cache()
 
