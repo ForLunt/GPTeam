@@ -1,0 +1,12 @@
+training_dataset
+partie1/dataset
+model_custom_weightsV4.pth
+model_custom_weightsV3.pth
+model_custom_weightsV2.pth
+model_custom_weights.pth
+
+model_ft.pth 
+model_ftV3.pth
+model_ftV4.pth
+model_ftV5.pth
+
