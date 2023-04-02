@@ -1,11 +1,12 @@
 .idea/
 .vscode/
+__pycache__/
 
 
 result.*
 training_dataset_Partie_1.zip
 
-output/.*
+output/*.png
 
 magenta/
 training_dataset
