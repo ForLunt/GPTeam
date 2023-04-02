@@ -10,19 +10,21 @@ function App() {
   const uploadRef = useRef<HTMLInputElement>(null)
 
   return (
-    <>
-      <Grid>
-        <Grid.Row>
-          <Grid.Column width={2}/>
-          <Grid.Column width={12} stretched textAlign="center" >
-            <Uploader />
-          </Grid.Column>
-          <Grid.Column width={2}/>
-        </Grid.Row>
-        
-      </Grid>
-    </>
-  )
+		<>
+			<Grid>
+				<Grid.Row />
+				<Grid.Row />
+				<Grid.Row />
+				<Grid.Row>
+					<Grid.Column width={2} />
+					<Grid.Column width={12} stretched textAlign="center">
+						<Uploader />
+					</Grid.Column>
+					<Grid.Column width={2} />
+				</Grid.Row>
+			</Grid>
+		</>
+  );
 }
 
 export default App
