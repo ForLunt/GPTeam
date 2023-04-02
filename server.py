@@ -5,27 +5,20 @@ from flask_cors import CORS, cross_origin
 from style import generate_img
 from Mask import clip_image
 from Fill import fill_mask
-
+import json
 from partie1.Modele import Modele
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
-app = Flask(__name__)
 
 # créer un modèle
 model = Modele()
-
-Liste_ok = []
-Liste_retoucher = []
-Liste_exclure = []
 
 @app.route('/upload', methods=['POST'])
 @cross_origin()
 def upload():
     # vide les listes
-    Liste_ok.clear()
-    Liste_retoucher.clear()
-    Liste_exclure.clear()
+    resultats = {"ok" : [], "retoucher" : [], "exclure"  : []}
 
     files = request.files
     print(files)
@@ -35,14 +28,17 @@ def upload():
         file_image = PIL.Image.open(file)
         resultat = model.processImage(file_image)
 
+        print(resultat)
+
         if resultat == "ok":
-            Liste_ok.append(file.filename)
+            resultats["ok"].append(file.filename)
         elif resultat == "retoucher":
-            Liste_retoucher.append(file.filename)
+            resultats["retoucher"].append(file.filename)
         elif resultat == "exclure":
-            Liste_exclure.append(file.filename)
-    
-    return "Files uploaded successfully"
+            resultats["exclure"].append(file.filename)
+
+
+    return json.dumps(resultats)
 
 
 @app.route('/retouche', methods=['POST'])
