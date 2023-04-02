@@ -1,5 +1,5 @@
 import PIL
-
+import os
 from flask import Flask, request, send_file
 from flask_cors import CORS, cross_origin
 from Mask import clip_image
@@ -49,7 +49,9 @@ def retouches():
 
     # On recupere un fichier image, le prompt de ce que l'on veut modifier et le prompt de ce que l'on veut ajouter
     file = request.files[0]
+    print("prompt1")
     prompt = request.form['prompt']
+    print("prompt2")
     prompt2 = request.form['prompt2']
 
     print(f"Received file {file.filename}")
