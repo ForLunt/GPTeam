@@ -2,7 +2,7 @@ import PIL
 import os
 from flask import Flask, request, send_file
 from flask_cors import CORS, cross_origin
-from style import generate_img
+#from style import generate_img
 from Mask import clip_image
 from Fill import fill_mask
 import json
@@ -49,7 +49,8 @@ def retouches():
         os.remove(os.path.join('output', file))
 
     # On recupere un fichier image, le prompt de ce que l'on veut modifier et le prompt de ce que l'on veut ajouter
-    file = request.files[0]
+    print("File")
+    file = request.files['jpg']
     print("prompt1")
     prompt = request.form['prompt']
     print("prompt2")
@@ -70,7 +71,7 @@ def retouches():
     return send_file("output/result.png", mimetype='image/png')
 
 
-@app.route('/style', methods=['POST'])
+"""@app.route('/style', methods=['POST'])
 @cross_origin()
 def style():
     # On commence par supprimer les fichiers précédents dans le dossier output
@@ -96,7 +97,7 @@ def style():
     
     # On renvoie le fichier image stylisé
     return send_file("output/stylized_"+file.filename+".png", mimetype='image/png')
-
+"""
 
 if __name__ == '__main__':
     app.run(port=5000)
