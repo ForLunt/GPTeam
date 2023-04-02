@@ -1,4 +1,10 @@
 .idea/
 .vscode/
 
+
 result.*
+training_dataset_Partie_1.zip
+
+output/.*
+
+magenta/
