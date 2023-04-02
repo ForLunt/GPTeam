@@ -1,10 +1,8 @@
 import PIL
-import PIL as Image
-import matplotlib.pylab as plt
 import numpy as np
 import tensorflow as tf
 import tensorflow_hub as tf_hub
-from matplotlib import gridspec
+
 
 
 def load_image(image_path, image_size=(512, 256)):
@@ -24,6 +22,15 @@ def export_image(tf_img):
     return PIL.Image.fromarray(img)
 
 def generate_img(original_img,style_img,nom):
+
+    # Enable GPU
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    if gpus:
+        try:
+            tf.config.experimental.set_visible_devices(gpus[0], 'GPU')
+        except RuntimeError as e:
+            print(e)
+
     # Brute force pour trouver des valeurs de ksize optimale 
     style_img = tf.nn.avg_pool(style_img, ksize=[3, 3], strides=[1, 1], padding='VALID')
 

@@ -10,6 +10,6 @@ clip_image('input/porsche-911.jpg', [prompt, prompt2])
 fill_mask('input/porsche-911.jpg', "output/output_" + prompt.replace(" ", "_") + ".png")
 
 # Stylisation photo
-generate_img(load_image("input/result.png"), load_image("input/comic.png"), "comicGen")
-generate_img(load_image("input/result.png"), load_image("input/van_gogh.png"), "van_gohgGen")
-generate_img(load_image("input/result.png"), load_image("input/stylized_ad.png"), "Stylized_adGen")
+generate_img(load_image("input/origin.jpg"), load_image("input/style.png"), "comicGen")
+generate_img(load_image("input/origin.jpg"), load_image("input/style.png"), "van_gohgGen")
+generate_img(load_image("input/origin.jpg"), load_image("input/style.png"), "Stylized_adGen")
