@@ -15,7 +15,7 @@ class Modele :
         print(".", end="")
         self.__model.fc = nn.Linear(num_ftrs, 3)
         print(".", end="")
-        self.__model.load_state_dict(torch.load('../model_custom_weightsV2.pth'))
+        self.__model.load_state_dict(torch.load('./model_custom_weightsV2.pth', map_location=torch.device('cpu')))
         print("Chargement du modèle terminé")
 
         self.__model.eval()
