@@ -1,6 +1,8 @@
 import PIL
+import os
 from flask import Flask, request, send_file
 from flask_cors import CORS, cross_origin
+from style import generate_img
 from Mask import clip_image
 from Fill import fill_mask
 
@@ -68,6 +70,35 @@ def retouches():
 
     # On renvoie le fichier image retouché
     return send_file("output/result.png", mimetype='image/png')
+
+
+@app.route('/style', methods=['POST'])
+@cross_origin()
+def style():
+    # On commence par supprimer les fichiers précédents dans le dossier output
+    for file in os.listdir('output'):
+        os.remove(os.path.join('output', file))
+
+    # On recupere un fichier image et le nom du style que l'on veut appliquer
+    file = request.files[0]
+    style_name = request.form['prompt']
+
+    # recupere le fichier style qui porte le nom de la variable style_name et qui est  dans la liste des fichier du dossier style
+    for file_style in os.listdir('style'):
+        if file_style == style_name+".png":
+            style = file_style
+
+
+    print(f"Received file {file.filename}")
+
+    # convertie l'image en un objet PIL.Image
+    file_image = PIL.Image.open(file)
+
+    generate_img(file_image, style, "output/stylized_"+file.filename+".png")
+    
+    # On renvoie le fichier image stylisé
+    return send_file("output/stylized_"+file.filename+".png", mimetype='image/png')
+
 
 if __name__ == '__main__':
     app.run(port=5000)

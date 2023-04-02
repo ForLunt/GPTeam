@@ -3,8 +3,6 @@ import numpy as np
 import tensorflow as tf
 import tensorflow_hub as tf_hub
 
-
-
 def load_image(image_path, image_size=(512, 256)):
     base=tf.io.read_file(image_path)
     img = tf.io.decode_image(
