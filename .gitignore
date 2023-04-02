@@ -1,12 +1,24 @@
-training_dataset
-partie1/dataset
-model_custom_weightsV4.pth
-model_custom_weightsV3.pth
-model_custom_weightsV2.pth
-model_custom_weights.pth
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-model_ft.pth 
-model_ftV3.pth
-model_ftV4.pth
-model_ftV5.pth
+node_modules
+dist
+dist-ssr
+*.local
 
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
