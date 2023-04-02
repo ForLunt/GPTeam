@@ -15,7 +15,7 @@ class Modele :
         print(".", end="")
         self.__model.fc = nn.Linear(num_ftrs, 3)
         print(".", end="")
-        self.__model.load_state_dict(torch.load('./model_custom_weightsV2.pth', map_location=torch.device('cpu')))
+        self.__model.load_state_dict(torch.load('./model_custom_weightsV2.pth'))
         print("Chargement du modèle terminé")
 
         self.__model.eval()
@@ -31,13 +31,16 @@ class Modele :
         ])
 
     def processImage(self, image : PIL.Image) :
+        print("Début du traitement de l'image")
         input_image = self.__transform(image).unsqueeze(0)
 
         # On passe l'image dans le modèle de détection de classe
 
+        print("Conversion")
         with torch.no_grad():
             detections = self.__model(input_image)
 
+        print("Analyse des résultats")
         # On analyse les résultats de détection
         _, preds = torch.max(detections, 1)
 
